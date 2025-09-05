@@ -1,0 +1,14 @@
+# Example crontab entries for automated data updates
+# Edit your crontab with: crontab -e
+
+# Update data daily at 2 AM
+0 2 * * * cd /path/to/assignment && python update_data.py --youtube-max 50 --forum-max 100
+
+# Update data weekly on Sundays at 3 AM with cleanup
+0 3 * * 0 cd /path/to/assignment && python update_data.py --youtube-max 100 --forum-max 200 --cleanup --cleanup-days 30
+
+# Update data every 6 hours during business hours (9 AM to 6 PM, Monday to Friday)
+0 9,15 * * 1-5 cd /path/to/assignment && python update_data.py --youtube-max 25 --forum-max 50
+
+# Log rotation (keep only last 7 days of logs)
+0 1 * * * find /path/to/assignment -name "update_data.log*" -mtime +7 -delete

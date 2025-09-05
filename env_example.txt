@@ -1,0 +1,18 @@
+# API Keys
+YOUTUBE_API_KEY=your_youtube_api_key_here
+N8N_FORUM_API_KEY=your_n8n_forum_api_key_here
+N8N_FORUM_BASE_URL=https://community.n8n.io
+
+# Database Configuration
+DATABASE_URL=sqlite:///./workflow_data.db
+# For MongoDB: mongodb://localhost:27017/workflow_db
+
+# Application Settings
+APP_NAME=n8n Workflow Popularity Tracker
+DEBUG=True
+LOG_LEVEL=INFO
+
+# Data Collection Settings
+YOUTUBE_SEARCH_QUERIES=n8n workflow,n8n automation,n8n integration
+TRENDS_QUERIES=n8n Slack integration,n8n Gmail automation,n8n workflow
+TRENDS_COUNTRIES=US,IN

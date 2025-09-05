@@ -1,0 +1,56 @@
+name: Update n8n Workflow Data
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: "0 2 * * *"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Set up environment variables
+        run: |
+          echo "YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }}" >> .env
+          echo "N8N_FORUM_API_KEY=${{ secrets.N8N_FORUM_API_KEY }}" >> .env
+          echo "N8N_FORUM_BASE_URL=https://community.n8n.io" >> .env
+          echo "DATABASE_URL=sqlite:///./workflow_data.db" >> .env
+          echo "DEBUG=False" >> .env
+          echo "LOG_LEVEL=INFO" >> .env
+
+      - name: Generate sample data (if no existing data)
+        run: |
+          python generate_sample_data.py
+
+      - name: Update data
+        run: |
+          python update_data.py --youtube-max 50 --forum-max 100
+
+      - name: Upload database
+        uses: actions/upload-artifact@v3
+        with:
+          name: workflow-database
+          path: workflow_data.db
+
+      - name: Commit and push database updates
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add workflow_data.db
+          git diff --staged --quiet || git commit -m "Update workflow data - $(date)"
+          git push

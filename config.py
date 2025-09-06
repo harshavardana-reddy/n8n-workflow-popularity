@@ -3,7 +3,9 @@ from typing import List
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
-load_dotenv()
+# Only load .env file if not in Vercel environment
+if not os.getenv("VERCEL"):
+    load_dotenv()
 
 class Settings(BaseSettings):
     # API Keys
@@ -11,8 +13,8 @@ class Settings(BaseSettings):
     n8n_forum_api_key: str = os.getenv("N8N_FORUM_API_KEY", "")
     n8n_forum_base_url: str = os.getenv("N8N_FORUM_BASE_URL", "https://community.n8n.io")
     
-    # Database Configuration
-    database_url: str = os.getenv("DATABASE_URL", "sqlite:///./workflow_data.db")
+    # Database Configuration - use in-memory for Vercel
+    database_url: str = os.getenv("DATABASE_URL", "sqlite:///:memory:" if os.getenv("VERCEL") else "sqlite:///./workflow_data.db")
     
     # Application Settings
     app_name: str = os.getenv("APP_NAME", "n8n Workflow Popularity Tracker")

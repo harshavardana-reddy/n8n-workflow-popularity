@@ -1,12 +1,22 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from config import settings
 
+# For Vercel deployment, use in-memory SQLite or a cloud database
+def get_database_url():
+    """Get database URL, with fallback for serverless environments"""
+    if os.getenv("VERCEL"):
+        # In Vercel, use in-memory SQLite or a cloud database
+        # For demo purposes, we'll use in-memory SQLite
+        return "sqlite:///:memory:"
+    return settings.database_url
+
 # Create database engine
 engine = create_engine(
-    settings.database_url,
-    connect_args={"check_same_thread": False} if "sqlite" in settings.database_url else {}
+    get_database_url(),
+    connect_args={"check_same_thread": False} if "sqlite" in get_database_url() else {}
 )
 
 # Create session factory
